@@ -149,9 +149,6 @@ func newStageBuilder(sourceImage v1.Image, args *dockerfile.BuildArgs, opts *con
 		if err != nil {
 			return nil, err
 		}
-		if command == nil {
-			continue
-		}
 		s.cmds = append(s.cmds, command)
 	}
 	s.args.AddMetaArgs(stage.MetaArgs)
@@ -415,6 +412,9 @@ func (s *stageBuilder) build(compositeKey CompositeCache, opts *config.KanikoOpt
 	// Unpack file system to root if we need to.
 	shouldUnpack := false
 	for _, cmd := range s.cmds {
+		if cmd == nil {
+			continue
+		}
 		if cmd.RequiresUnpackedFS() {
 			logrus.Infof("Unpacking rootfs as cmd %s requires it.", cmd.String())
 			shouldUnpack = true
