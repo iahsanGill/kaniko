@@ -20,7 +20,6 @@ type GoldenTest struct {
 	Args        []string
 	Env         map[string]string
 	KeySequence []string
-	Redirects   []string
 	Plan        string
 }
 

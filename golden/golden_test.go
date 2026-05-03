@@ -35,6 +35,7 @@ import (
 	testissuemz487 "github.com/osscontainertools/kaniko/golden/testdata/test_issue_mz487"
 	testunittests "github.com/osscontainertools/kaniko/golden/testdata/test_unittests"
 	"github.com/osscontainertools/kaniko/golden/types"
+	"github.com/osscontainertools/kaniko/pkg/cache"
 	"github.com/osscontainertools/kaniko/pkg/config"
 	"github.com/osscontainertools/kaniko/pkg/executor"
 	"github.com/sirupsen/logrus"
@@ -95,10 +96,11 @@ func TestRun(t *testing.T) {
 							}
 
 							opts := config.KanikoOptions{}
-							executor.FakeCache = &executor.FakeLayerCache{
-								KeySequence: test.KeySequence,
-								Redirects:   test.Redirects,
+							origNewLayerCache := executor.NewLayerCache
+							executor.NewLayerCache = func(_ *config.KanikoOptions) cache.LayerCache {
+								return &executor.FakeLayerCache{KeySequence: test.KeySequence}
 							}
+							t.Cleanup(func() { executor.NewLayerCache = origNewLayerCache })
 							exec := &cobra.Command{
 								Use: "kaniko",
 							}

@@ -540,7 +540,7 @@ func TestInitializeConfig(t *testing.T) {
 
 func Test_newLayerCache_defaultCache(t *testing.T) {
 	t.Run("default layer cache is registry cache", func(t *testing.T) {
-		layerCache := newLayerCache(&config.KanikoOptions{CacheRepo: "some-cache-repo"})
+		layerCache := NewLayerCache(&config.KanikoOptions{CacheRepo: "some-cache-repo"})
 		foundCache, ok := layerCache.(*cache.RegistryCache)
 		if !ok {
 			t.Error("expected layer cache to be a registry cache")
@@ -555,7 +555,7 @@ func Test_newLayerCache_defaultCache(t *testing.T) {
 
 func Test_newLayerCache_layoutCache(t *testing.T) {
 	t.Run("when cache repo has 'oci:' prefix layer cache is layout cache", func(t *testing.T) {
-		layerCache := newLayerCache(&config.KanikoOptions{CacheRepo: "oci:/some-cache-repo"})
+		layerCache := NewLayerCache(&config.KanikoOptions{CacheRepo: "oci:/some-cache-repo"})
 		foundCache, ok := layerCache.(*cache.LayoutCache)
 		if !ok {
 			t.Error("expected layer cache to be a layout cache")
@@ -608,8 +608,7 @@ func Test_stageBuilder_optimize(t *testing.T) {
 				cacheCommand: MockCachedDockerCommand{},
 			}
 			sb.cmds = []commands.DockerCommand{command}
-			cacheInfo := stageCacheInfo{}
-			_, err = sb.optimize(&ck, cacheInfo, cf.Config, sb.args, tc.opts, util.FileContext{}, lc, nil, true)
+			_, _, err = sb.optimize(&ck, cf.Config, sb.args, tc.opts, util.FileContext{}, lc, nil, true)
 			if err != nil {
 				t.Errorf("Expected error to be nil but was %v", err)
 			}
@@ -1486,8 +1485,7 @@ RUN foobar
 				getFSFromImage = tc.mockGetFSFromImage
 			}
 			compositeKey := NewCompositeCache(sb.baseImageDigest)
-			cacheInfo := stageCacheInfo{}
-			_, err := sb.optimize(compositeKey, cacheInfo, sb.cf.Config, sb.args, tc.opts, util.FileContext{}, lc, nil, true)
+			_, _, err := sb.optimize(compositeKey, sb.cf.Config, sb.args, tc.opts, util.FileContext{}, lc, nil, true)
 			if err != nil {
 				t.Errorf("failed to optimize instructions: %v", err)
 			}
