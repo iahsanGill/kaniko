@@ -370,6 +370,7 @@ func (s *stageBuilder) optimize(compositeKeyPtr *CompositeCache, cfg v1.Config, 
 			logrus.Debugf("Optimize: cache key for command %v %v", command.String(), ck)
 			finalCacheKey = ck
 			ci.cacheKeys[i] = ck
+
 			if command.ShouldCacheOutput() && !stopCache {
 				img, err := layerCache.RetrieveLayer(ck)
 				if err != nil {
@@ -1022,10 +1023,10 @@ func DoBuild(opts *config.KanikoOptions) (image v1.Image, retErr error) {
 			}
 
 			finalCacheKey, ci, err := sb.optimize(compositeKey, sb.cf.Config, sb.args, opts, fileContext, layerCache, stageFinalCacheKeys, false)
-			cacheInfo[idx] = ci
 			if err != nil {
 				return nil, fmt.Errorf("precompute: failed to optimize stage %d: %w", stage.Index, err)
 			}
+			cacheInfo[idx] = ci
 			if finalCacheKey != "" {
 				stageFinalCacheKeys[stage.Index] = finalCacheKey
 			}
