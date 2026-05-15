@@ -88,6 +88,7 @@ type KanikoOptions struct {
 	RunV2                    bool
 	CacheCopyLayers          bool
 	CacheRunLayers           bool
+	CacheProbeAfterMiss      bool
 	ForceBuildMetadata       bool
 	InitialFSUnpacked        bool
 	SkipPushPermissionCheck  bool

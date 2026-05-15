@@ -588,6 +588,95 @@ func Test_newLayerCache_layoutCache(t *testing.T) {
 	})
 }
 
+// Test_stageBuilder_optimize_cacheProbeAfterMiss verifies that a single
+// cache miss does not disable cache probing for the rest of the stage when
+// CacheProbeAfterMiss is enabled (the new default), and that subsequent hits
+// still result in command substitution. The legacy behavior — cascade-on-miss
+// — is preserved when the flag is explicitly disabled.
+func Test_stageBuilder_optimize_cacheProbeAfterMiss(t *testing.T) {
+	// Three commands, with the middle one missing in the cache. The cache
+	// should still be consulted for commands 1 and 3, and those should be
+	// substituted with their cached forms.
+	hits := []bool{true, false, true}
+
+	makeCommands := func() []commands.DockerCommand {
+		out := make([]commands.DockerCommand, len(hits))
+		for i := range hits {
+			f, err := os.CreateTemp("", "kaniko-optimize-test")
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { os.Remove(f.Name()) })
+			out[i] = MockDockerCommand{
+				command:      fmt.Sprintf("cmd-%d", i),
+				contextFiles: []string{f.Name()},
+				cacheCommand: MockCachedDockerCommand{},
+			}
+		}
+		return out
+	}
+
+	tests := []struct {
+		name              string
+		probeAfterMiss    bool
+		wantLookups       int
+		wantSubstitutions int
+	}{
+		{
+			name:           "probe after miss (default) — all layers probed",
+			probeAfterMiss: true,
+			wantLookups:    3,
+			// commands 1 and 3 hit and get substituted; command 2 misses
+			wantSubstitutions: 2,
+		},
+		{
+			name:           "legacy cascade — stops after first miss",
+			probeAfterMiss: false,
+			// commands 1 (hit) and 2 (miss) consulted; after miss we stop.
+			wantLookups: 2,
+			// only command 1 substituted (hit before the miss).
+			wantSubstitutions: 1,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			cf := &v1.ConfigFile{}
+			snap := &fakeSnapShotter{}
+			lc := &fakeLayerCache{img: &fakeImage{}, hits: hits}
+			sb := &stageBuilder{
+				opts: &config.KanikoOptions{
+					Cache:               true,
+					CacheProbeAfterMiss: tc.probeAfterMiss,
+				},
+				cf:          cf,
+				snapshotter: snap,
+				layerCache:  lc,
+				args:        dockerfile.NewBuildArgs([]string{}),
+				cmds:        makeCommands(),
+			}
+
+			if err := sb.optimize(CompositeCache{}, cf.Config); err != nil {
+				t.Fatalf("optimize returned error: %v", err)
+			}
+
+			if got := len(lc.receivedKeys); got != tc.wantLookups {
+				t.Errorf("cache lookups: got %d, want %d (keys=%v)", got, tc.wantLookups, lc.receivedKeys)
+			}
+
+			substituted := 0
+			for _, c := range sb.cmds {
+				if _, ok := c.(MockCachedDockerCommand); ok {
+					substituted++
+				}
+			}
+			if substituted != tc.wantSubstitutions {
+				t.Errorf("command substitutions: got %d, want %d", substituted, tc.wantSubstitutions)
+			}
+		})
+	}
+}
+
 func Test_stageBuilder_optimize(t *testing.T) {
 	testCases := []struct {
 		opts     *config.KanikoOptions

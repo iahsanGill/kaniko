@@ -237,6 +237,12 @@ func (s *stageBuilder) optimize(compositeKey CompositeCache, cfg v1.Config) erro
 		s.args = buildArgs
 	}()
 
+	// stopCache short-circuits all remaining lookups once a miss is hit.
+	// Legacy kaniko always set this on first miss, which meant a single miss
+	// disabled the cache for the rest of the stage. CacheProbeAfterMiss=true
+	// (the default) keeps probing — cached layers are tar diffs and apply
+	// cleanly on top of a locally-rebuilt prior layer as long as the cache's
+	// determinism assumption holds (which it must for caching to mean anything).
 	stopCache := false
 	// Possibly replace commands with their cached implementations.
 	// We walk through all the commands, running any commands that only operate on metadata.
@@ -272,7 +278,9 @@ func (s *stageBuilder) optimize(compositeKey CompositeCache, cfg v1.Config) erro
 				logrus.Debugf("Failed to retrieve layer: %s", err)
 				logrus.Infof("No cached layer found for cmd %s", command.String())
 				logrus.Debugf("Key missing was: %s", compositeKey.Key())
-				stopCache = true
+				if !s.opts.CacheProbeAfterMiss {
+					stopCache = true
+				}
 				continue
 			}
 

@@ -65,6 +65,7 @@ func Test_DetectFilesystemSkiplist(t *testing.T) {
 		{"/sys", false},
 		{"/etc/mtab", false},
 		{"/tmp/apt-key-gpghome", true},
+		{"/run/secrets", true},
 	}
 	actualSkiplist := ignorelist
 	sort.Slice(actualSkiplist, func(i, j int) bool {
@@ -1494,6 +1495,10 @@ func TestInitIgnoreList(t *testing.T) {
 		},
 		{
 			Path:            "/tmp/apt-key-gpghome",
+			PrefixMatchOnly: true,
+		},
+		{
+			Path:            "/run/secrets",
 			PrefixMatchOnly: true,
 		},
 	}

@@ -75,6 +75,14 @@ var defaultIgnoreList = []IgnoreListEntry{
 		Path:            "/tmp/apt-key-gpghome",
 		PrefixMatchOnly: true,
 	},
+	{
+		// /run/secrets is the conventional mountpoint for RUN --mount=type=secret
+		// files. We always exclude it from snapshots as defense-in-depth so that
+		// even if a secret file lingers past its teardown, it cannot end up in
+		// the resulting image layer.
+		Path:            "/run/secrets",
+		PrefixMatchOnly: true,
+	},
 }
 
 var ignorelist = append([]IgnoreListEntry{}, defaultIgnoreList...)

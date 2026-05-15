@@ -81,6 +81,7 @@ _If you are interested in contributing to kaniko, see
       - [Flag `--cache-repo`](#flag---cache-repo)
       - [Flag `--cache-copy-layers`](#flag---cache-copy-layers)
       - [Flag `--cache-run-layers`](#flag---cache-run-layers)
+      - [Flag `--cache-probe-after-miss`](#flag---cache-probe-after-miss)
       - [Flag `--cache-ttl duration`](#flag---cache-ttl-duration)
       - [Flag `--cleanup`](#flag---cleanup)
       - [Flag `--compressed-caching`](#flag---compressed-caching)
@@ -504,9 +505,10 @@ cache for the layer. If it exists, kaniko will pull and extract the cached layer
 instead of executing the command. If not, kaniko will execute the command and
 then push the newly created layer to the cache.
 
-Note that kaniko cannot read layers from the cache after a cache miss: once a
-layer has not been found in the cache, all subsequent layers are built locally
-without consulting the cache.
+By default, kaniko continues to consult the cache for each layer even after a
+miss (see [`--cache-probe-after-miss`](#flag---cache-probe-after-miss)). The
+historical behavior of stopping all cache lookups after the first miss is still
+available by setting `--cache-probe-after-miss=false`.
 
 Users can opt into caching by setting the `--cache=true` flag. A remote
 repository for storing cached layers can be provided via the `--cache-repo`
@@ -843,6 +845,19 @@ Set this flag to cache copy layers.
 #### Flag `--cache-run-layers`
 
 Set this flag to cache run layers (default=true).
+
+#### Flag `--cache-probe-after-miss`
+
+Set this flag to `true` (the default) to keep probing the cache for subsequent
+layers after a cache miss. The legacy kaniko behavior was to stop all cache
+lookups once any layer missed, which meant a single transient miss (an
+expired or evicted cache entry, an interrupted prior build) disabled the
+cache for the entire rest of the stage. With this flag enabled, kaniko
+continues to consult the cache for each subsequent layer; cached tar diffs
+apply cleanly on top of locally-rebuilt prior layers as long as commands are
+deterministic (the same assumption the cache scheme already requires).
+
+Set this to `false` to restore the legacy stop-on-first-miss behavior.
 
 #### Flag `--cache-ttl duration`
 
