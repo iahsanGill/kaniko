@@ -27,10 +27,10 @@ import (
 	"syscall"
 	"testing"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/iahsanGill/tatara/pkg/dockerfile"
 	"github.com/iahsanGill/tatara/pkg/util"
 	"github.com/iahsanGill/tatara/testutil"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"

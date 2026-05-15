@@ -15,6 +15,6 @@ jobs:
     steps:
     - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v4.01
       with:
-        go-version: '1.22'
+        go-version: '1.26'
     - uses: actions/checkout@b0e28b5ac45a892f91e7d036f8200cf5ed489415 # v3
     - run: make test

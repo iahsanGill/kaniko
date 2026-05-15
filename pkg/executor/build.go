@@ -37,6 +37,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 
+	"github.com/google/go-containerregistry/pkg/v1/partial"
 	"github.com/iahsanGill/tatara/pkg/cache"
 	"github.com/iahsanGill/tatara/pkg/commands"
 	"github.com/iahsanGill/tatara/pkg/config"
@@ -47,7 +48,6 @@ import (
 	"github.com/iahsanGill/tatara/pkg/snapshot"
 	"github.com/iahsanGill/tatara/pkg/timing"
 	"github.com/iahsanGill/tatara/pkg/util"
-	"github.com/google/go-containerregistry/pkg/v1/partial"
 )
 
 // This is the size of an empty tar in Go

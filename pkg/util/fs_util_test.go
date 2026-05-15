@@ -30,13 +30,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/mock/gomock"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/iahsanGill/tatara/pkg/config"
 	"github.com/iahsanGill/tatara/pkg/constants"
 	"github.com/iahsanGill/tatara/pkg/mocks/go-containerregistry/mockv1"
 	"github.com/iahsanGill/tatara/testutil"
-	"github.com/golang/mock/gomock"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/types"
 )
 
 func Test_DetectFilesystemSkiplist(t *testing.T) {

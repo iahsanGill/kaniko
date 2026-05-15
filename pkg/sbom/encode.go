@@ -22,10 +22,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/iahsanGill/tatara/pkg/config"
 	"github.com/anchore/syft/syft/format/cyclonedxjson"
 	"github.com/anchore/syft/syft/format/spdxjson"
 	"github.com/anchore/syft/syft/sbom"
+	"github.com/iahsanGill/tatara/pkg/config"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )

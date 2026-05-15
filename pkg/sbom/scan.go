@@ -19,12 +19,12 @@ package sbom
 import (
 	"context"
 
-	"github.com/iahsanGill/tatara/pkg/util"
-	"github.com/iahsanGill/tatara/pkg/version"
 	"github.com/anchore/syft/syft"
 	"github.com/anchore/syft/syft/sbom"
 	"github.com/anchore/syft/syft/source"
 	"github.com/anchore/syft/syft/source/directorysource"
+	"github.com/iahsanGill/tatara/pkg/util"
+	"github.com/iahsanGill/tatara/pkg/version"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 

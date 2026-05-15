@@ -28,9 +28,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/iahsanGill/tatara/pkg/config"
 	"github.com/docker/docker/pkg/archive"
 	"github.com/docker/docker/pkg/system"
+	"github.com/iahsanGill/tatara/pkg/config"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )

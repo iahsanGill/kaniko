@@ -39,15 +39,25 @@ args = parser.parse_args()
 
 
 def get_refs():
+    """Load all boilerplate templates, grouped by extension.
+
+    Multiple templates per extension are supported. Files like
+    boilerplate.go.txt and boilerplate.go.tatara.txt both end up in the
+    refs["go"] list, and a candidate file passes if it matches ANY of them.
+    This lets a fork add its own attribution template without having to
+    rewrite every upstream file.
+    """
     refs = {}
 
     for path in glob.glob(os.path.join(args.boilerplate_dir, "boilerplate.*.txt")):
-        extension = os.path.basename(path).split(".")[1]
+        # Filenames are boilerplate.<ext>[.<variant>].txt
+        parts = os.path.basename(path).split(".")
+        extension = parts[1]
 
         ref_file = open(path, 'r')
         ref = ref_file.read().splitlines()
         ref_file.close()
-        refs[extension] = ref
+        refs.setdefault(extension, []).append(ref)
 
     return refs
 
@@ -63,9 +73,9 @@ def file_passes(filename, refs, regexs):
     basename = os.path.basename(filename)
     extension = file_extension(filename)
     if extension != "":
-        ref = refs[extension]
+        candidates = refs[extension]
     else:
-        ref = refs[basename]
+        candidates = refs[basename]
 
     # remove build tags from the top of Go files
     if extension == "go":
@@ -81,32 +91,36 @@ def file_passes(filename, refs, regexs):
         p = regexs["shebang"]
         (data, found) = p.subn("", data, 1)
 
-    data = data.splitlines()
+    data_lines = data.splitlines()
 
-    # if our test file is smaller than the reference it surely fails!
+    # File passes if it matches ANY of the registered templates.
+    for ref in candidates:
+        if matches_template(data_lines, ref, regexs):
+            return True
+    return False
+
+
+def matches_template(data, ref, regexs):
+    """Returns True iff the first len(ref) lines of data match ref after
+    year-substitution. Pure function (does not mutate data)."""
     if len(ref) > len(data):
         return False
 
-    # trim our file to the same number of lines as the reference file
-    data = data[:len(ref)]
+    # Work on a copy: trim to template length and substitute years.
+    candidate = list(data[:len(ref)])
 
     p = regexs["year"]
-    for d in data:
+    for d in candidate:
         if p.search(d):
             return False
 
-    # Replace all occurrences of the date regex with "YEAR"
     p = regexs["date"]
-    for i, d in enumerate(data):
-        (data[i], found) = p.subn('YEAR', d)
+    for i, d in enumerate(candidate):
+        (candidate[i], found) = p.subn('YEAR', d)
         if found != 0:
             break
 
-    # if we don't match the reference at this point, fail
-    if ref != data:
-        return False
-
-    return True
+    return ref == candidate
 
 def file_extension(filename):
     return os.path.splitext(filename)[1].split(".")[-1].lower()

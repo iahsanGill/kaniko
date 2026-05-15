@@ -23,11 +23,11 @@ import (
 	"strings"
 	"syscall"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	kConfig "github.com/iahsanGill/tatara/pkg/config"
 	"github.com/iahsanGill/tatara/pkg/constants"
 	"github.com/iahsanGill/tatara/pkg/dockerfile"
 	"github.com/iahsanGill/tatara/pkg/util"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"

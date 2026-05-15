@@ -24,13 +24,13 @@ import (
 	"path"
 	"regexp"
 
+	"github.com/google/go-containerregistry/pkg/name"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	"github.com/iahsanGill/tatara/pkg/config"
 	"github.com/iahsanGill/tatara/pkg/dockerfile"
 	"github.com/iahsanGill/tatara/pkg/image/remote"
 	"github.com/iahsanGill/tatara/pkg/util"
-	"github.com/google/go-containerregistry/pkg/name"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )

@@ -24,14 +24,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/iahsanGill/tatara/pkg/config"
-	"github.com/iahsanGill/tatara/pkg/creds"
-	"github.com/iahsanGill/tatara/pkg/util"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/layout"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
+	"github.com/iahsanGill/tatara/pkg/config"
+	"github.com/iahsanGill/tatara/pkg/creds"
+	"github.com/iahsanGill/tatara/pkg/util"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )

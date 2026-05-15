@@ -22,10 +22,10 @@ import (
 	"errors"
 	"io"
 
-	"github.com/iahsanGill/tatara/pkg/commands"
-	"github.com/iahsanGill/tatara/pkg/dockerfile"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/types"
+	"github.com/iahsanGill/tatara/pkg/commands"
+	"github.com/iahsanGill/tatara/pkg/dockerfile"
 )
 
 type fakeSnapShotter struct {

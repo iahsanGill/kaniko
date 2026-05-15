@@ -31,10 +31,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/iahsanGill/tatara/pkg/config"
-	"github.com/iahsanGill/tatara/pkg/timing"
 	"github.com/docker/docker/pkg/archive"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/iahsanGill/tatara/pkg/config"
+	"github.com/iahsanGill/tatara/pkg/timing"
 	"github.com/karrick/godirwalk"
 	"github.com/moby/buildkit/frontend/dockerfile/dockerignore"
 	"github.com/moby/patternmatcher"

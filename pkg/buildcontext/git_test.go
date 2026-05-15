@@ -20,9 +20,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/iahsanGill/tatara/testutil"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
+	"github.com/iahsanGill/tatara/testutil"
 )
 
 func TestGetGitPullMethod(t *testing.T) {

@@ -27,12 +27,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/iahsanGill/tatara/pkg/cache"
-	"github.com/iahsanGill/tatara/pkg/commands"
-	"github.com/iahsanGill/tatara/pkg/config"
-	"github.com/iahsanGill/tatara/pkg/dockerfile"
-	"github.com/iahsanGill/tatara/pkg/util"
-	"github.com/iahsanGill/tatara/testutil"
 	"github.com/containerd/containerd/platforms"
 	"github.com/google/go-cmp/cmp"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -40,6 +34,12 @@ import (
 	"github.com/google/go-containerregistry/pkg/v1/mutate"
 	"github.com/google/go-containerregistry/pkg/v1/partial"
 	"github.com/google/go-containerregistry/pkg/v1/types"
+	"github.com/iahsanGill/tatara/pkg/cache"
+	"github.com/iahsanGill/tatara/pkg/commands"
+	"github.com/iahsanGill/tatara/pkg/config"
+	"github.com/iahsanGill/tatara/pkg/dockerfile"
+	"github.com/iahsanGill/tatara/pkg/util"
+	"github.com/iahsanGill/tatara/testutil"
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 )
 

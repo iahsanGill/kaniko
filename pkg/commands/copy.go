@@ -27,9 +27,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/iahsanGill/tatara/pkg/dockerfile"
 	"github.com/iahsanGill/tatara/pkg/util"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
 )
 
 // for testing

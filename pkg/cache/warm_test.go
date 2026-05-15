@@ -21,9 +21,9 @@ import (
 	"os"
 	"testing"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/iahsanGill/tatara/pkg/config"
 	"github.com/iahsanGill/tatara/pkg/fakes"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
 )
 
 const (
