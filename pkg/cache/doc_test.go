@@ -20,8 +20,8 @@ import (
 	"bytes"
 	"log"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/config"
-	"github.com/GoogleContainerTools/kaniko/pkg/image/remote"
+	"github.com/iahsanGill/tatara/pkg/config"
+	"github.com/iahsanGill/tatara/pkg/image/remote"
 )
 
 func ExampleWarmer_Warm() {

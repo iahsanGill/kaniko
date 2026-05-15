@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/config"
-	"github.com/GoogleContainerTools/kaniko/pkg/creds"
-	"github.com/GoogleContainerTools/kaniko/pkg/util"
+	"github.com/iahsanGill/tatara/pkg/config"
+	"github.com/iahsanGill/tatara/pkg/creds"
+	"github.com/iahsanGill/tatara/pkg/util"
 
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"

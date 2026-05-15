@@ -21,12 +21,12 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/cache"
-	"github.com/GoogleContainerTools/kaniko/pkg/config"
-	"github.com/GoogleContainerTools/kaniko/pkg/constants"
-	"github.com/GoogleContainerTools/kaniko/pkg/image/remote"
-	"github.com/GoogleContainerTools/kaniko/pkg/timing"
-	"github.com/GoogleContainerTools/kaniko/pkg/util"
+	"github.com/iahsanGill/tatara/pkg/cache"
+	"github.com/iahsanGill/tatara/pkg/config"
+	"github.com/iahsanGill/tatara/pkg/constants"
+	"github.com/iahsanGill/tatara/pkg/image/remote"
+	"github.com/iahsanGill/tatara/pkg/timing"
+	"github.com/iahsanGill/tatara/pkg/util"
 
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"

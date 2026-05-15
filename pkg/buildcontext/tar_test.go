@@ -26,8 +26,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/util"
-	"github.com/GoogleContainerTools/kaniko/testutil"
+	"github.com/iahsanGill/tatara/pkg/util"
+	"github.com/iahsanGill/tatara/testutil"
 )
 
 func TestBuildWithLocalTar(t *testing.T) {

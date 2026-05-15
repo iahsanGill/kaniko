@@ -22,8 +22,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/config"
-	"github.com/GoogleContainerTools/kaniko/testutil"
+	"github.com/iahsanGill/tatara/pkg/config"
+	"github.com/iahsanGill/tatara/testutil"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 )

@@ -18,7 +18,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/config"
+	"github.com/iahsanGill/tatara/pkg/config"
 )
 
 func TestValidateOptions(t *testing.T) {

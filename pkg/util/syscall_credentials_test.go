@@ -22,7 +22,7 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/GoogleContainerTools/kaniko/testutil"
+	"github.com/iahsanGill/tatara/testutil"
 )
 
 func TestSyscallCredentials(t *testing.T) {

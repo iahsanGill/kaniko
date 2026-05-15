@@ -19,7 +19,7 @@ package config
 import (
 	"testing"
 
-	"github.com/GoogleContainerTools/kaniko/testutil"
+	"github.com/iahsanGill/tatara/testutil"
 )
 
 func TestKanikoGitOptions(t *testing.T) {

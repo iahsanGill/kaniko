@@ -1,4 +1,4 @@
-module github.com/GoogleContainerTools/kaniko
+module github.com/iahsanGill/tatara
 
 go 1.25.8
 

@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/config"
+	"github.com/iahsanGill/tatara/pkg/config"
 )
 
 const fakeDigestHex = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
@@ -111,8 +111,8 @@ func TestGenerate_ProducesValidStatement(t *testing.T) {
 	}
 
 	// BuildDefinition.
-	if stmt.Predicate.BuildDefinition.BuildType != BuildTypeKanikoDockerfileV1 {
-		t.Errorf("buildType = %q, want %q", stmt.Predicate.BuildDefinition.BuildType, BuildTypeKanikoDockerfileV1)
+	if stmt.Predicate.BuildDefinition.BuildType != BuildTypeTataraDockerfileV1 {
+		t.Errorf("buildType = %q, want %q", stmt.Predicate.BuildDefinition.BuildType, BuildTypeTataraDockerfileV1)
 	}
 	ext := stmt.Predicate.BuildDefinition.ExternalParameters
 	if got, _ := ext["dockerfile"].(string); got != opts.DockerfilePath {
@@ -132,8 +132,8 @@ func TestGenerate_ProducesValidStatement(t *testing.T) {
 	if stmt.Predicate.RunDetails.Builder.ID != BuilderID {
 		t.Errorf("builder.id = %q, want %q", stmt.Predicate.RunDetails.Builder.ID, BuilderID)
 	}
-	if _, ok := stmt.Predicate.RunDetails.Builder.Version["kaniko"]; !ok {
-		t.Error("builder.version missing kaniko entry")
+	if _, ok := stmt.Predicate.RunDetails.Builder.Version["tatara"]; !ok {
+		t.Error("builder.version missing tatara entry")
 	}
 	if !stmt.Predicate.RunDetails.Metadata.StartedOn.Equal(startedAt) {
 		t.Errorf("startedOn mismatch: got %v want %v", stmt.Predicate.RunDetails.Metadata.StartedOn, startedAt)

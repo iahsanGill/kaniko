@@ -32,7 +32,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/config"
+	"github.com/iahsanGill/tatara/pkg/config"
 	"github.com/pkg/errors"
 )
 

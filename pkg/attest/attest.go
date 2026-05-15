@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package attest produces in-toto attestations describing how a kaniko build
+// Package attest produces in-toto attestations describing how a tatara build
 // produced a container image. The current implementation emits SLSA
 // Provenance v1.0 documents (https://slsa.dev/spec/v1.0/provenance) wrapped
 // in an in-toto v1 Statement envelope.
@@ -30,7 +30,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/config"
+	"github.com/iahsanGill/tatara/pkg/config"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -46,14 +46,14 @@ const (
 	// v1.0 predicates.
 	SLSAProvenanceV1Predicate = "https://slsa.dev/provenance/v1"
 
-	// BuildTypeKanikoDockerfileV1 identifies the buildType used by kaniko
+	// BuildTypeTataraDockerfileV1 identifies the buildType used by tatara
 	// for Dockerfile-based builds. Stable for the lifetime of the v1
 	// provenance schema; bumping requires a buildType bump too.
-	BuildTypeKanikoDockerfileV1 = "https://github.com/GoogleContainerTools/kaniko/builds/dockerfile/v1"
+	BuildTypeTataraDockerfileV1 = "https://github.com/iahsanGill/tatara/builds/dockerfile/v1"
 
-	// BuilderID identifies kaniko as the builder. Used as the value of
+	// BuilderID identifies tatara as the builder. Used as the value of
 	// runDetails.builder.id in the produced predicate.
-	BuilderID = "https://github.com/GoogleContainerTools/kaniko"
+	BuilderID = "https://github.com/iahsanGill/tatara"
 )
 
 // ValidateOptions checks that ProvenanceOptions are internally consistent.

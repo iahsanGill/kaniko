@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/dockerfile"
-	"github.com/GoogleContainerTools/kaniko/pkg/util"
+	"github.com/iahsanGill/tatara/pkg/dockerfile"
+	"github.com/iahsanGill/tatara/pkg/util"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/moby/buildkit/frontend/dockerfile/instructions"
 	"github.com/pkg/errors"

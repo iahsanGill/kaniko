@@ -17,8 +17,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/config"
-	"github.com/GoogleContainerTools/kaniko/pkg/version"
+	"github.com/iahsanGill/tatara/pkg/config"
+	"github.com/iahsanGill/tatara/pkg/version"
 	"github.com/pkg/errors"
 )
 
@@ -57,7 +57,7 @@ func buildStatement(opts *config.KanikoOptions, imageDigest string, startedAt, f
 		PredicateType: SLSAProvenanceV1Predicate,
 		Predicate: ProvenancePredicate{
 			BuildDefinition: BuildDefinition{
-				BuildType:          BuildTypeKanikoDockerfileV1,
+				BuildType:          BuildTypeTataraDockerfileV1,
 				ExternalParameters: externalParameters(opts),
 				InternalParameters: internalParameters(opts),
 			},
@@ -65,7 +65,7 @@ func buildStatement(opts *config.KanikoOptions, imageDigest string, startedAt, f
 				Builder: Builder{
 					ID: BuilderID,
 					Version: map[string]string{
-						"kaniko": version.Version(),
+						"tatara": version.Version(),
 					},
 				},
 				Metadata: Metadata{

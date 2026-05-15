@@ -27,7 +27,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/GoogleContainerTools/kaniko/testutil"
+	"github.com/iahsanGill/tatara/testutil"
 )
 
 var regularFiles = []string{"file", "file.tar", "file.tar.gz"}

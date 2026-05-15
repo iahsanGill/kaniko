@@ -40,10 +40,10 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/api/option"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/timing"
-	"github.com/GoogleContainerTools/kaniko/pkg/util"
-	"github.com/GoogleContainerTools/kaniko/pkg/util/bucket"
-	"github.com/GoogleContainerTools/kaniko/testutil"
+	"github.com/iahsanGill/tatara/pkg/timing"
+	"github.com/iahsanGill/tatara/pkg/util"
+	"github.com/iahsanGill/tatara/pkg/util/bucket"
+	"github.com/iahsanGill/tatara/testutil"
 )
 
 var (
@@ -228,7 +228,7 @@ func getBranchCommitAndURL() (branch, commit, url string) {
 		branch = strings.TrimPrefix(branch, "refs/heads/")
 	}
 	if repo == "" {
-		repo = "GoogleContainerTools/kaniko"
+		repo = "iahsanGill/tatara"
 	}
 	if branch == "" {
 		branch = "main"

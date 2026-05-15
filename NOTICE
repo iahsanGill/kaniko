@@ -1,0 +1,28 @@
+tatara
+Copyright 2026 The tatara Authors
+
+This product includes software originally developed by Google as kaniko
+(https://github.com/GoogleContainerTools/kaniko), which was archived in
+June 2025.
+  Copyright 2018-2025 Google LLC and the kaniko contributors.
+
+This product also includes contributions from the community-maintained
+osscontainertools/kaniko fork (https://github.com/osscontainertools/kaniko).
+  Copyright 2025-2026 The osscontainertools/kaniko contributors.
+
+Both upstream projects are licensed under the Apache License, Version 2.0.
+The full license text is available at:
+  http://www.apache.org/licenses/LICENSE-2.0
+
+tatara's new contributions — including but not limited to:
+  - The Software Bill of Materials (SBOM) generation pipeline (pkg/sbom)
+  - The SLSA Provenance v1.0 attestation pipeline (pkg/attest)
+  - The continue-probing-cache-after-miss optimization (--cache-probe-after-miss)
+  - The /run/secrets default-ignore-list entry
+are released under the same Apache License, Version 2.0 license terms.
+
+Third-party dependencies vendored under vendor/ retain their original
+copyright notices and licenses. See each vendored package's LICENSE for
+specifics. Notable additions on top of upstream kaniko's vendor tree:
+  - github.com/anchore/syft (Apache-2.0)         — SBOM scanner library
+  - modernc.org/sqlite      (BSD-3-Clause)        — Pure-Go sqlite driver

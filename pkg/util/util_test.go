@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/GoogleContainerTools/kaniko/testutil"
+	"github.com/iahsanGill/tatara/testutil"
 )
 
 func TestGetInputFrom(t *testing.T) {

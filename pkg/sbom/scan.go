@@ -19,8 +19,8 @@ package sbom
 import (
 	"context"
 
-	"github.com/GoogleContainerTools/kaniko/pkg/util"
-	"github.com/GoogleContainerTools/kaniko/pkg/version"
+	"github.com/iahsanGill/tatara/pkg/util"
+	"github.com/iahsanGill/tatara/pkg/version"
 	"github.com/anchore/syft/syft"
 	"github.com/anchore/syft/syft/sbom"
 	"github.com/anchore/syft/syft/source"
@@ -75,11 +75,11 @@ func scanRootfs(ctx context.Context, imageRef string) (*sbom.SBOM, error) {
 	}
 
 	// Override the SBOM's tool attribution so downstream consumers can tell
-	// this SBOM was emitted by kaniko (which calls syft under the hood)
+	// this SBOM was emitted by tatara (which calls syft under the hood)
 	// rather than syft being invoked directly. The syft version stays
 	// visible inside the descriptor's Configuration block.
 	result.Descriptor = sbom.Descriptor{
-		Name:    "kaniko",
+		Name:    "tatara",
 		Version: version.Version(),
 		Configuration: map[string]string{
 			"engine":         "syft",
