@@ -30,6 +30,18 @@ type CacheOptions struct {
 	CacheTTL time.Duration
 }
 
+// SBOMOptions controls Software Bill of Materials emission. When Format is
+// the empty string SBOM generation is disabled. When set, OutputPath must
+// also be set; the SBOM is written to that path on the kaniko filesystem.
+type SBOMOptions struct {
+	// Format is one of "spdx-json" or "cyclonedx-json". Empty disables SBOM
+	// generation.
+	Format string
+	// OutputPath is the absolute path on the kaniko filesystem where the
+	// generated SBOM is written. Must be set when Format is set.
+	OutputPath string
+}
+
 // RegistryOptions are all the options related to the registries, set by command line arguments.
 type RegistryOptions struct {
 	RegistryMaps                 multiKeyMultiValueArg
@@ -52,6 +64,7 @@ type RegistryOptions struct {
 type KanikoOptions struct {
 	RegistryOptions
 	CacheOptions
+	SBOM                     SBOMOptions
 	Destinations             multiArg
 	BuildArgs                multiArg
 	Labels                   multiArg

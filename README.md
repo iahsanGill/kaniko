@@ -82,6 +82,8 @@ _If you are interested in contributing to kaniko, see
       - [Flag `--cache-copy-layers`](#flag---cache-copy-layers)
       - [Flag `--cache-run-layers`](#flag---cache-run-layers)
       - [Flag `--cache-probe-after-miss`](#flag---cache-probe-after-miss)
+      - [Flag `--sbom-format`](#flag---sbom-format)
+      - [Flag `--sbom-path`](#flag---sbom-path)
       - [Flag `--cache-ttl duration`](#flag---cache-ttl-duration)
       - [Flag `--cleanup`](#flag---cleanup)
       - [Flag `--compressed-caching`](#flag---compressed-caching)
@@ -858,6 +860,51 @@ apply cleanly on top of locally-rebuilt prior layers as long as commands are
 deterministic (the same assumption the cache scheme already requires).
 
 Set this to `false` to restore the legacy stop-on-first-miss behavior.
+
+#### Flag `--sbom-format`
+
+Generate a Software Bill of Materials (SBOM) for the built image. Accepted
+values:
+
+- `spdx-json` — SPDX 2.3 in JSON form
+- `cyclonedx-json` — CycloneDX 1.x in JSON form
+
+When set, `--sbom-path` is required. When empty (the default), SBOM generation
+is disabled and the build behaves exactly as before.
+
+The SBOM is generated after the image is built and before push, by scanning
+the kaniko container's root filesystem with the [syft](https://github.com/anchore/syft)
+library. Paths kaniko already considers "not part of the user image"
+(kaniko's working dir, `/proc`, `/sys`, `/dev`, `/run`, `/tmp`, `/etc/mtab`,
+etc.) are excluded automatically.
+
+Catalogers cover all OS package managers syft supports — `apk` (Alpine),
+`dpkg` (Debian/Ubuntu), `rpm` (Fedora/RHEL/CentOS — using the pure-Go
+`modernc.org/sqlite` driver, no CGO required) — plus language ecosystems
+(Python, Node, Go modules, Java, etc.) when their package manifests are
+present in the image.
+
+#### Flag `--sbom-path`
+
+Absolute path on the kaniko filesystem where the generated SBOM is written.
+Required when `--sbom-format` is set; the path's parent directory is created
+if missing, and the file is written atomically (temp file + rename) so a
+failed encode never leaves a partial SBOM on disk.
+
+Example:
+
+```shell
+docker run -v $(pwd):/workspace -v $(pwd)/out:/output \
+  gcr.io/kaniko-project/executor:latest \
+  --context dir:///workspace \
+  --destination my.registry/my-image:latest \
+  --sbom-format spdx-json \
+  --sbom-path /output/sbom.spdx.json
+```
+
+After the build, `out/sbom.spdx.json` will be a valid SPDX 2.3 document
+listing every OS package and language-manifest package found in the image,
+with versions, file references, and CPE/PURL identifiers.
 
 #### Flag `--cache-ttl duration`
 

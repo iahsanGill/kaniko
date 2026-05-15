@@ -36,7 +36,6 @@ import (
 	"github.com/containerd/containerd/v2/core/content"
 	"github.com/containerd/containerd/v2/core/images"
 	"github.com/containerd/containerd/v2/core/remotes"
-	remoteserrors "github.com/containerd/containerd/v2/core/remotes/errors"
 )
 
 type dockerPusher struct {
@@ -149,8 +148,8 @@ func (p dockerPusher) push(ctx context.Context, desc ocispec.Descriptor, ref str
 				return nil, fmt.Errorf("content %v on remote: %w", desc.Digest, errdefs.ErrAlreadyExists)
 			}
 		} else if resp.StatusCode != http.StatusNotFound {
-			err := remoteserrors.NewUnexpectedStatusErr(resp)
-			log.G(ctx).WithField("resp", resp).WithField("body", string(err.(remoteserrors.ErrUnexpectedStatus).Body)).Debug("unexpected response")
+			err := unexpectedResponseErr(resp)
+			log.G(ctx).WithError(err).Debug("unexpected response")
 			resp.Body.Close()
 			return nil, err
 		}
@@ -224,8 +223,8 @@ func (p dockerPusher) push(ctx context.Context, desc ocispec.Descriptor, ref str
 			})
 			return nil, fmt.Errorf("content %v on remote: %w", desc.Digest, errdefs.ErrAlreadyExists)
 		default:
-			err := remoteserrors.NewUnexpectedStatusErr(resp)
-			log.G(ctx).WithField("resp", resp).WithField("body", string(err.(remoteserrors.ErrUnexpectedStatus).Body)).Debug("unexpected response")
+			err := unexpectedResponseErr(resp)
+			log.G(ctx).WithError(err).Debug("unexpected response")
 			return nil, err
 		}
 
@@ -299,8 +298,8 @@ func (p dockerPusher) push(ctx context.Context, desc ocispec.Descriptor, ref str
 		switch resp.StatusCode {
 		case http.StatusOK, http.StatusCreated, http.StatusNoContent:
 		default:
-			err := remoteserrors.NewUnexpectedStatusErr(resp)
-			log.G(ctx).WithField("resp", resp).WithField("body", string(err.(remoteserrors.ErrUnexpectedStatus).Body)).Debug("unexpected response")
+			err := unexpectedResponseErr(resp)
+			log.G(ctx).WithError(err).Debug("unexpected response")
 			pushw.setError(err)
 			return
 		}
@@ -513,7 +512,7 @@ func (pw *pushWriter) Commit(ctx context.Context, size int64, expected digest.Di
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusCreated, http.StatusNoContent, http.StatusAccepted:
 	default:
-		return remoteserrors.NewUnexpectedStatusErr(resp)
+		return unexpectedResponseErr(resp)
 	}
 
 	status, err := pw.tracker.GetStatus(pw.ref)
@@ -527,15 +526,21 @@ func (pw *pushWriter) Commit(ctx context.Context, size int64, expected digest.Di
 
 	if expected == "" {
 		expected = status.Expected
+	} else if expected != status.Expected {
+		return fmt.Errorf("unexpected digest received: got %q, expected %q", status.Expected, expected)
 	}
 
-	actual, err := digest.Parse(resp.Header.Get("Docker-Content-Digest"))
-	if err != nil {
-		return fmt.Errorf("invalid content digest in response: %w", err)
-	}
+	if dgstHdr := resp.Header.Get("Docker-Content-Digest"); dgstHdr != "" {
+		actual, err := digest.Parse(dgstHdr)
+		if err != nil {
+			return fmt.Errorf("invalid content digest in response: %w", err)
+		}
 
-	if actual != expected {
-		return fmt.Errorf("got digest %s, expected %s", actual, expected)
+		if actual != expected {
+			return fmt.Errorf("got digest %s, expected %s", actual, expected)
+		}
+	} else {
+		log.G(ctx).Info("registry did not send a Docker-Content-Digest header")
 	}
 
 	status.Committed = true

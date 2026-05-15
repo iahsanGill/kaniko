@@ -32,6 +32,7 @@ import (
 	"github.com/GoogleContainerTools/kaniko/pkg/constants"
 	"github.com/GoogleContainerTools/kaniko/pkg/executor"
 	"github.com/GoogleContainerTools/kaniko/pkg/logging"
+	"github.com/GoogleContainerTools/kaniko/pkg/sbom"
 	"github.com/GoogleContainerTools/kaniko/pkg/timing"
 	"github.com/GoogleContainerTools/kaniko/pkg/util"
 	"github.com/GoogleContainerTools/kaniko/pkg/util/proc"
@@ -136,6 +137,9 @@ var RootCmd = &cobra.Command{
 			if err := cacheFlagsValid(); err != nil {
 				return errors.Wrap(err, "cache flags invalid")
 			}
+			if err := sbom.ValidateOptions(opts.SBOM); err != nil {
+				return errors.Wrap(err, "sbom flags invalid")
+			}
 			if err := resolveSourceContext(); err != nil {
 				return errors.Wrap(err, "error resolving source context")
 			}
@@ -190,6 +194,9 @@ var RootCmd = &cobra.Command{
 		image, err := executor.DoBuild(opts)
 		if err != nil {
 			exit(errors.Wrap(err, "error building image"))
+		}
+		if err := sbom.Generate(cmd.Context(), opts, sbomSubject(opts)); err != nil {
+			exit(errors.Wrap(err, "error generating SBOM"))
 		}
 		if err := executor.DoPush(image, opts); err != nil {
 			exit(errors.Wrap(err, "error pushing image"))
@@ -278,6 +285,8 @@ func addKanikoOptionsFlags() {
 	RootCmd.PersistentFlags().BoolVarP(&opts.CacheCopyLayers, "cache-copy-layers", "", false, "Caches copy layers")
 	RootCmd.PersistentFlags().BoolVarP(&opts.CacheRunLayers, "cache-run-layers", "", true, "Caches run layers")
 	RootCmd.PersistentFlags().BoolVarP(&opts.CacheProbeAfterMiss, "cache-probe-after-miss", "", true, "Continue probing the cache for subsequent layers after a cache miss. Set to false to restore the legacy behavior of stopping all cache lookups after the first miss.")
+	RootCmd.PersistentFlags().StringVarP(&opts.SBOM.Format, "sbom-format", "", "", "Generate a Software Bill of Materials for the built image. One of: spdx-json, cyclonedx-json. Requires --sbom-path. Default empty (disabled).")
+	RootCmd.PersistentFlags().StringVarP(&opts.SBOM.OutputPath, "sbom-path", "", "", "Path on the kaniko filesystem to write the generated SBOM. Required when --sbom-format is set.")
 	RootCmd.PersistentFlags().VarP(&opts.IgnorePaths, "ignore-path", "", "Ignore these paths when taking a snapshot. Set it repeatedly for multiple paths.")
 	RootCmd.PersistentFlags().BoolVarP(&opts.ForceBuildMetadata, "force-build-metadata", "", false, "Force add metadata layers to build image")
 	RootCmd.PersistentFlags().BoolVarP(&opts.SkipPushPermissionCheck, "skip-push-permission-check", "", false, "Skip check of the push permission")
@@ -341,6 +350,16 @@ func checkNoDeprecatedFlags() {
 }
 
 // cacheFlagsValid makes sure the flags passed in related to caching are valid
+// sbomSubject returns the image reference to record as the SBOM's scan
+// subject. We use the first destination tag when present; otherwise an
+// "image" placeholder so the SBOM is still well-formed for --no-push builds.
+func sbomSubject(opts *config.KanikoOptions) string {
+	if len(opts.Destinations) > 0 {
+		return opts.Destinations[0]
+	}
+	return "image"
+}
+
 func cacheFlagsValid() error {
 	if !opts.Cache {
 		return nil
