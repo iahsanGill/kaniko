@@ -84,6 +84,7 @@ _If you are interested in contributing to kaniko, see
       - [Flag `--cache-probe-after-miss`](#flag---cache-probe-after-miss)
       - [Flag `--sbom-format`](#flag---sbom-format)
       - [Flag `--sbom-path`](#flag---sbom-path)
+      - [Flag `--provenance-path`](#flag---provenance-path)
       - [Flag `--cache-ttl duration`](#flag---cache-ttl-duration)
       - [Flag `--cleanup`](#flag---cleanup)
       - [Flag `--compressed-caching`](#flag---compressed-caching)
@@ -905,6 +906,52 @@ docker run -v $(pwd):/workspace -v $(pwd)/out:/output \
 After the build, `out/sbom.spdx.json` will be a valid SPDX 2.3 document
 listing every OS package and language-manifest package found in the image,
 with versions, file references, and CPE/PURL identifiers.
+
+#### Flag `--provenance-path`
+
+Write a [SLSA Provenance v1.0](https://slsa.dev/spec/v1.0/provenance)
+attestation describing how the image was built. The output is an
+[in-toto v1 Statement](https://github.com/in-toto/attestation/blob/main/spec/v1/statement.md)
+JSON file wrapping the SLSA predicate.
+
+The attestation records:
+
+- **subject** — every destination tag and the image's sha256 digest
+- **buildDefinition.buildType** — kaniko's stable Dockerfile build-type URI
+- **buildDefinition.externalParameters** — destinations, dockerfile path,
+  context, build args (names only when source was bare `ARG NAME`), target,
+  platform
+- **buildDefinition.internalParameters** — cache, snapshot mode,
+  reproducible flag, etc.
+- **runDetails.builder** — builder identity URI and kaniko version
+- **runDetails.metadata** — random invocation ID plus start/finish timestamps
+  bracketing the build window
+
+Combined with `--sbom-format` and `--sbom-path`, a single kaniko run produces
+the SBOM + provenance pair required for SLSA Level 3 evidence.
+
+Example:
+
+```shell
+docker run -v $(pwd):/workspace -v $(pwd)/out:/output \
+  gcr.io/kaniko-project/executor:latest \
+  --context dir:///workspace \
+  --destination my.registry/my-image:v1.0 \
+  --sbom-format spdx-json --sbom-path /output/sbom.spdx.json \
+  --provenance-path /output/provenance.json
+```
+
+The resulting `provenance.json` can be uploaded to an OCI registry as an
+attestation, signed with cosign, or verified directly:
+
+```shell
+jq -r '.predicateType' out/provenance.json
+# => https://slsa.dev/provenance/v1
+```
+
+Signing of the attestation (cosign / sigstore) is a separate concern handled
+outside the kaniko build path; the produced JSON is in the standard format
+those tools consume.
 
 #### Flag `--cache-ttl duration`
 

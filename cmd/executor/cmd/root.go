@@ -27,6 +27,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/GoogleContainerTools/kaniko/pkg/attest"
 	"github.com/GoogleContainerTools/kaniko/pkg/buildcontext"
 	"github.com/GoogleContainerTools/kaniko/pkg/config"
 	"github.com/GoogleContainerTools/kaniko/pkg/constants"
@@ -140,6 +141,9 @@ var RootCmd = &cobra.Command{
 			if err := sbom.ValidateOptions(opts.SBOM); err != nil {
 				return errors.Wrap(err, "sbom flags invalid")
 			}
+			if err := attest.ValidateOptions(opts.Provenance); err != nil {
+				return errors.Wrap(err, "provenance flags invalid")
+			}
 			if err := resolveSourceContext(); err != nil {
 				return errors.Wrap(err, "error resolving source context")
 			}
@@ -191,12 +195,17 @@ var RootCmd = &cobra.Command{
 		if err := os.Chdir("/"); err != nil {
 			exit(errors.Wrap(err, "error changing to root dir"))
 		}
+		buildStartedAt := time.Now()
 		image, err := executor.DoBuild(opts)
 		if err != nil {
 			exit(errors.Wrap(err, "error building image"))
 		}
+		buildFinishedAt := time.Now()
 		if err := sbom.Generate(cmd.Context(), opts, sbomSubject(opts)); err != nil {
 			exit(errors.Wrap(err, "error generating SBOM"))
+		}
+		if err := generateProvenance(opts, image, buildStartedAt, buildFinishedAt); err != nil {
+			exit(errors.Wrap(err, "error generating provenance"))
 		}
 		if err := executor.DoPush(image, opts); err != nil {
 			exit(errors.Wrap(err, "error pushing image"))
@@ -287,6 +296,7 @@ func addKanikoOptionsFlags() {
 	RootCmd.PersistentFlags().BoolVarP(&opts.CacheProbeAfterMiss, "cache-probe-after-miss", "", true, "Continue probing the cache for subsequent layers after a cache miss. Set to false to restore the legacy behavior of stopping all cache lookups after the first miss.")
 	RootCmd.PersistentFlags().StringVarP(&opts.SBOM.Format, "sbom-format", "", "", "Generate a Software Bill of Materials for the built image. One of: spdx-json, cyclonedx-json. Requires --sbom-path. Default empty (disabled).")
 	RootCmd.PersistentFlags().StringVarP(&opts.SBOM.OutputPath, "sbom-path", "", "", "Path on the kaniko filesystem to write the generated SBOM. Required when --sbom-format is set.")
+	RootCmd.PersistentFlags().StringVarP(&opts.Provenance.OutputPath, "provenance-path", "", "", "Path on the kaniko filesystem to write a SLSA Provenance v1.0 attestation (in-toto v1 Statement JSON). Empty disables provenance generation.")
 	RootCmd.PersistentFlags().VarP(&opts.IgnorePaths, "ignore-path", "", "Ignore these paths when taking a snapshot. Set it repeatedly for multiple paths.")
 	RootCmd.PersistentFlags().BoolVarP(&opts.ForceBuildMetadata, "force-build-metadata", "", false, "Force add metadata layers to build image")
 	RootCmd.PersistentFlags().BoolVarP(&opts.SkipPushPermissionCheck, "skip-push-permission-check", "", false, "Skip check of the push permission")
@@ -358,6 +368,20 @@ func sbomSubject(opts *config.KanikoOptions) string {
 		return opts.Destinations[0]
 	}
 	return "image"
+}
+
+// generateProvenance extracts the image digest required for the SLSA
+// subject and delegates to the attest package. Pulled out of the main run
+// flow so the digest-fetch error path stays readable.
+func generateProvenance(opts *config.KanikoOptions, image v1.Image, startedAt, finishedAt time.Time) error {
+	if opts.Provenance.OutputPath == "" {
+		return nil
+	}
+	digest, err := image.Digest()
+	if err != nil {
+		return errors.Wrap(err, "fetching image digest for provenance subject")
+	}
+	return attest.Generate(opts, digest.String(), startedAt, finishedAt)
 }
 
 func cacheFlagsValid() error {

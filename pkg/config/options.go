@@ -42,6 +42,14 @@ type SBOMOptions struct {
 	OutputPath string
 }
 
+// ProvenanceOptions controls SLSA Provenance v1.0 attestation emission. When
+// OutputPath is empty, provenance generation is disabled.
+type ProvenanceOptions struct {
+	// OutputPath is the absolute path where the in-toto + SLSA provenance
+	// statement is written as JSON. Empty disables provenance generation.
+	OutputPath string
+}
+
 // RegistryOptions are all the options related to the registries, set by command line arguments.
 type RegistryOptions struct {
 	RegistryMaps                 multiKeyMultiValueArg
@@ -65,6 +73,7 @@ type KanikoOptions struct {
 	RegistryOptions
 	CacheOptions
 	SBOM                     SBOMOptions
+	Provenance               ProvenanceOptions
 	Destinations             multiArg
 	BuildArgs                multiArg
 	Labels                   multiArg
